@@ -1,0 +1,40 @@
+name: Linux AppImage
+on:
+  workflow_dispatch:
+  push:
+    paths: ['src/**', 'pom.xml', 'native/linux/**', 'tools/*linux*', 'tools/build-appimage.sh', '.github/workflows/linux-appimage.yml']
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - name: Build dependencies (not required on end-user machines)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential pkg-config nasm libx264-dev libx265-dev libpulse-dev libxcb1-dev libxcb-shm0-dev libxcb-xfixes0-dev libglib2.0-dev libx11-dev gstreamer1.0-tools gstreamer1.0-plugins-base gstreamer1.0-pipewire libpipewire-0.3-0 pulseaudio-utils libgtk-3-dev libayatana-appindicator3-1 xvfb
+      - name: Build custom FFmpeg and portal client
+        run: tools/build-linux-ffmpeg.sh
+      - name: Tests with real X11 capture
+        run: xvfb-run -a mvn -Dscreenrec.linux.integration=true test
+      - name: Get AppImage builder
+        run: |
+          mkdir -p tools/packaging-cache
+          curl -fL --retry 3 https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage -o tools/packaging-cache/appimagetool-x86_64.AppImage
+          chmod +x tools/packaging-cache/appimagetool-x86_64.AppImage
+      - name: Package self-contained AppImage
+        run: tools/build-appimage.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ScreenRecorder-linux-x86_64
+          path: |
+            target/ScreenRecorder-x86_64.AppImage
+            target/ScreenRecorder-x86_64.AppImage.sha256
+            ffmpeg/linux/BUILD.txt

@@ -1,0 +1,119 @@
+/* ==========================================================================
+   ScreenRecorder — Light Theme
+   Clean, airy surfaces with the same coral accent for recording identity.
+   ========================================================================== */
+
+.root {
+    -toggle-thumb-color: #ffffff;
+    /* --- Surfaces (back to front) --- */
+    -surface-deep:      #f4f6fa;
+    -surface-base:      #ffffff;
+    -surface-raised:    #ffffff;
+    -surface-overlay:   #ffffff;
+    -surface-sunken:    #f1f4f8;
+    -surface-hover:     #eef2f7;
+    -surface-active:    #e4eaf2;
+
+    /* --- Borders --- */
+    -border-subtle:     #e3e8ef;
+    -border-strong:     #cdd5e0;
+    -border-focus:      #ff4d5e;
+
+    /* --- Text --- */
+    -text-primary:      #131720;
+    -text-secondary:    #5b6675;
+    -text-tertiary:     #8b95a5;
+    -text-inverse:      #ffffff;
+
+    /* --- Accent --- */
+    -accent:            #f5384c;
+    -accent-hover:      #ff4d5e;
+    -accent-pressed:    #d92b3e;
+    -accent-muted:      #ffaab4;
+    -accent-soft:       rgba(245, 56, 76, 0.10);
+    -accent-contrast:   #ffffff;
+    -accent-text:       #d92b3e;
+    -accent-gradient:   linear-gradient(to bottom right, #f5384c, #ff7043);
+
+    /* --- Secondary accent --- */
+    -brand:             #2f6fe4;
+    -brand-hover:       #1e5fd6;
+    -brand-soft:        rgba(47, 111, 228, 0.10);
+
+    /* --- Semantic --- */
+    -success:           #12a95f;
+    -success-soft:      rgba(18, 169, 95, 0.12);
+    -warning:           #d98900;
+    -warning-soft:      rgba(217, 137, 0, 0.12);
+    -danger:            #e03131;
+    -danger-soft:       rgba(224, 49, 49, 0.10);
+    -info:              #2f6fe4;
+
+    /* --- Shadows --- */
+    -shadow-color:      rgba(20, 30, 50, 0.14);
+
+    /* --- Component-specific --- */
+    -scroll-thumb:        rgba(0, 0, 0, 0.16);
+    -scroll-thumb-hover:  rgba(0, 0, 0, 0.30);
+    -tooltip-bg:          #1f2733;
+    -tooltip-text:        #f5f7fa;
+    -sidebar-bg:          #fafbfd;
+    -sidebar-item-hover:  rgba(0, 0, 0, 0.04);
+    -sidebar-item-active: rgba(245, 56, 76, 0.09);
+    -camera-preview-bg:   #101319;
+    -checker-a:           #eef1f6;
+    -checker-b:           #e4e9f0;
+
+    -fx-background-color: -surface-deep;
+    -fx-text-fill: -text-primary;
+}
+
+/* --------------------------------------------------------------------------
+   Global backgrounds
+   -------------------------------------------------------------------------- */
+
+.app-root {
+    -fx-background-color: -surface-deep;
+}
+
+.app-sidebar {
+    -fx-background-color: -sidebar-bg;
+    -fx-border-color: transparent -border-subtle transparent transparent;
+    -fx-border-width: 0 1 0 0;
+}
+
+.app-content {
+    -fx-background-color: -surface-base;
+}
+
+/* --------------------------------------------------------------------------
+   Card surfaces
+   -------------------------------------------------------------------------- */
+
+.card {
+    -fx-background-color: -surface-raised;
+    -fx-background-radius: 14px;
+    -fx-border-color: -border-subtle;
+    -fx-border-radius: 14px;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(20, 30, 50, 0.05), 8, 0.06, 0, 2);
+}
+
+.card-interactive:hover {
+    -fx-background-color: -surface-hover;
+    -fx-border-color: -border-strong;
+}
+
+.card-selected {
+    -fx-background-color: -accent-soft;
+    -fx-border-color: -accent;
+}
+
+.card-elevated {
+    -fx-background-color: -surface-overlay;
+    -fx-background-radius: 14px;
+    -fx-border-color: -border-strong;
+    -fx-border-radius: 14px;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, -shadow-color, 24, 0.16, 0, 8);
+}

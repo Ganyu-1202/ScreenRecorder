@@ -1,0 +1,118 @@
+/* ==========================================================================
+   ScreenRecorder — Dark Theme
+   Deep, neutral surfaces with a vivid coral/red accent (recording identity).
+   ========================================================================== */
+
+.root {
+    -toggle-thumb-color: #000000;
+    /* --- Surfaces (back to front) --- */
+    -surface-deep:      #0a0c10;   /* window backdrop, deepest layer */
+    -surface-base:      #101319;   /* main content background */
+    -surface-raised:    #161a22;   /* cards, panels */
+    -surface-overlay:   #1b2029;   /* elevated overlays, control bar */
+    -surface-sunken:    #0c0f14;   /* inputs, wells */
+    -surface-hover:     #1e242e;   /* hover state */
+    -surface-active:    #232a35;   /* pressed / selected state */
+
+    /* --- Borders --- */
+    -border-subtle:     #1f2531;
+    -border-strong:     #2a3240;
+    -border-focus:      #ff5566;
+
+    /* --- Text --- */
+    -text-primary:      #e8ecf2;
+    -text-secondary:    #9aa4b4;
+    -text-tertiary:     #66707f;
+    -text-inverse:      #0a0c10;
+
+    /* --- Accent: recording red / coral --- */
+    -accent:            #ff4d5e;
+    -accent-hover:      #ff6674;
+    -accent-pressed:    #e63a4b;
+    -accent-muted:      #8f3040;
+    -accent-soft:       rgba(255, 77, 94, 0.14);
+    -accent-contrast:   #ffffff;
+    -accent-text:       #ff8b96;
+    -accent-gradient:   linear-gradient(to bottom right, #ff4d5e, #ff7a45);
+
+    /* --- Secondary accent: cool blue for interactive controls --- */
+    -brand:             #4d8dff;
+    -brand-hover:       #6ba0ff;
+    -brand-soft:        rgba(77, 141, 255, 0.16);
+
+    /* --- Semantic --- */
+    -success:           #34d07f;
+    -success-soft:      rgba(52, 208, 127, 0.15);
+    -warning:           #ffb340;
+    -warning-soft:      rgba(255, 179, 64, 0.15);
+    -danger:            #ff5566;
+    -danger-soft:       rgba(255, 85, 102, 0.15);
+    -info:              #4d8dff;
+
+    /* --- Shadows --- */
+    -shadow-color:      rgba(0, 0, 0, 0.55);
+
+    /* --- Component-specific --- */
+    -scroll-thumb:        rgba(255, 255, 255, 0.13);
+    -scroll-thumb-hover:  rgba(255, 255, 255, 0.24);
+    -tooltip-bg:          #232a35;
+    -tooltip-text:        #e8ecf2;
+    -sidebar-bg:          #0d1015;
+    -sidebar-item-hover:  rgba(255, 255, 255, 0.05);
+    -sidebar-item-active: rgba(255, 77, 94, 0.13);
+    -camera-preview-bg:   #000000;
+    -checker-a:           #1a1f27;
+    -checker-b:           #141920;
+
+    -fx-background-color: -surface-deep;
+    -fx-text-fill: -text-primary;
+}
+
+/* --------------------------------------------------------------------------
+   Global backgrounds
+   -------------------------------------------------------------------------- */
+
+.app-root {
+    -fx-background-color: -surface-deep;
+}
+
+.app-sidebar {
+    -fx-background-color: -sidebar-bg;
+    -fx-border-color: transparent -border-subtle transparent transparent;
+    -fx-border-width: 0 1 0 0;
+}
+
+.app-content {
+    -fx-background-color: -surface-base;
+}
+
+/* --------------------------------------------------------------------------
+   Card surfaces
+   -------------------------------------------------------------------------- */
+
+.card {
+    -fx-background-color: -surface-raised;
+    -fx-background-radius: 14px;
+    -fx-border-color: -border-subtle;
+    -fx-border-radius: 14px;
+    -fx-border-width: 1;
+}
+
+.card-interactive:hover {
+    -fx-background-color: -surface-hover;
+    -fx-border-color: -border-strong;
+}
+
+.card-selected {
+    -fx-background-color: -accent-soft;
+    -fx-border-color: -accent;
+}
+
+.card-elevated {
+    -fx-background-color: -surface-overlay;
+    -fx-background-radius: 14px;
+    -fx-border-color: -border-strong;
+    -fx-border-radius: 14px;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, -shadow-color, 26, 0.16, 0, 10);
+}

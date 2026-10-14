@@ -1,0 +1,31 @@
+--- a/libavdevice/gdigrab.c
++++ b/libavdevice/gdigrab.c
+@@ -511,7 +511,8 @@
+     ci.cbSize = sizeof(ci);
+ 
+     if (GetCursorInfo(&ci)) {
+-        HCURSOR icon = CopyCursor(ci.hCursor);
++        /* Borrow the shared cursor; never destroy a system cursor handle. */
++        HCURSOR icon = ci.hCursor;
+         ICONINFO info;
+         POINT pos;
+         RECT clip_rect = gdigrab->clip_rect;
+@@ -530,7 +531,7 @@
+             /* Use the standard arrow cursor as a fallback.
+              * You'll probably only hit this in Wine, which can't fetch
+              * the current system cursor. */
+-            icon = CopyCursor(LoadCursor(NULL, IDC_ARROW));
++            icon = LoadCursor(NULL, IDC_ARROW);
+         }
+ 
+         if (!GetIconInfo(icon, &info)) {
+@@ -572,8 +573,7 @@
+             DeleteObject(info.hbmMask);
+         if (info.hbmColor)
+             DeleteObject(info.hbmColor);
+-        if (icon)
+-            DestroyCursor(icon);
++        /* icon is borrowed; only GetIconInfo bitmaps are owned here. */
+     } else {
+         CURSOR_ERROR("Couldn't get cursor info");
+     }

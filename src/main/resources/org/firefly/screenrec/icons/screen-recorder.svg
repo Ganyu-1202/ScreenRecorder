@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <title>聚焦录制 — 桌面录屏软件图标</title>
+  <desc>深蓝圆角底板，白色屏幕轮廓与珊瑚红录制圆点。</desc>
+  <defs>
+    <linearGradient id="base" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#254878"/>
+      <stop offset="1" stop-color="#101E3A"/>
+    </linearGradient>
+    <linearGradient id="record" x1="0" y1="0" x2="0.8" y2="1">
+      <stop stop-color="#FF786C"/>
+      <stop offset="1" stop-color="#F04459"/>
+    </linearGradient>
+  </defs>
+  <rect x="48" y="48" width="928" height="928" rx="208" fill="url(#base)"/>
+  <rect x="48.75" y="48.75" width="926.5" height="926.5" rx="207.25" fill="none" stroke="#FFFFFF" stroke-opacity="0.12" stroke-width="1.5"/>
+  <g fill="none" stroke="#F5F8FF" stroke-width="48" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="224" y="276" width="576" height="386" rx="48"/>
+    <path d="M512 664V752 M420 752H604"/>
+  </g>
+  <circle cx="732" cy="638" r="106" fill="#162844"/>
+  <circle cx="732" cy="638" r="78" fill="url(#record)"/>
+</svg>

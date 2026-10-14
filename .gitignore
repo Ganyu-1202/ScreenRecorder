@@ -1,0 +1,40 @@
+# Maven build outputs (includes installers and diagnostic recordings)
+/target/
+**/target/
+/dependency-reduced-pom.xml
+
+# Downloaded build toolchains, FFmpeg sources and intermediate builds
+/tools/packaging-cache/
+
+# IDE local configuration
+/.idea/
+/.vscode/
+*.iml
+*.ipr
+*.iws
+/.classpath
+/.project
+/.settings/
+/bin/
+
+# Logs and local temporary files
+*.log
+*.tmp
+*.temp
+*.swp
+*~
+
+# OS metadata
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Local secrets (never commit credentials)
+.env
+.env.*
+!.env.example
+
+# IMPORTANT: ffmpeg/win is a project-owned runtime dependency.
+# Do not globally ignore *.exe, *.dll, *.jar, or the ffmpeg/ directory.
+# Keep src/, pom.xml, README.md, tools/*.ps1, tools/*.sh,
+# tools/*.patch, and the complete ffmpeg/ tree under version control.

@@ -1,0 +1,485 @@
+/* ==========================================================================
+   ScreenRecorder — Design System Foundations
+   Shared tokens, resets and primitives used by both themes.
+   ========================================================================== */
+
+.root {
+    /* Typography. The authoritative family is injected at runtime by
+       SystemFont (see ThemeManager.applySystemFont) because the right face
+       differs per platform and a missing name silently falls back to the
+       generic System font. This stack is only a pre-injection fallback. */
+    -fx-font-family: "Microsoft YaHei UI", "Microsoft YaHei", "PingFang SC", "Noto Sans CJK SC", "Segoe UI", sans-serif;
+    -fx-font-size: 13px;
+    -fx-font-smoothing-type: gray;
+
+    /* Spacing scale */
+    -space-1: 4px;
+    -space-2: 8px;
+    -space-3: 12px;
+    -space-4: 16px;
+    -space-5: 20px;
+    -space-6: 24px;
+    -space-8: 32px;
+    -space-10: 40px;
+
+    /* Motion */
+    -motion-fast: 120ms;
+    -motion-normal: 180ms;
+    -motion-slow: 280ms;
+}
+
+/* --------------------------------------------------------------------------
+   Icons
+   -------------------------------------------------------------------------- */
+
+/* An SVGPath with no fill rule falls back to solid black, which vanishes on
+   dark surfaces. Give every icon a themed default; components override it
+   for specific states (hover, active, semantic colours). */
+.svg-path {
+    -fx-fill: -text-primary;
+}
+
+/* --------------------------------------------------------------------------
+   Scroll bars — slim, overlay style
+   -------------------------------------------------------------------------- */
+
+.scroll-bar {
+    -fx-background-color: transparent;
+    -fx-padding: 2;
+}
+
+.scroll-bar:horizontal .track,
+.scroll-bar:vertical .track {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: -scroll-thumb;
+    -fx-background-radius: 999px;
+    -fx-pref-width: 8px;
+}
+
+.scroll-bar .thumb:hover {
+    -fx-background-color: -scroll-thumb-hover;
+}
+
+.scroll-bar .increment-button,
+.scroll-bar .decrement-button,
+.scroll-bar .increment-arrow,
+.scroll-bar .decrement-arrow {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+    -fx-shape: null;
+    -fx-pref-width: 0;
+    -fx-pref-height: 0;
+}
+
+.scroll-pane,
+.scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+
+.scroll-pane {
+    -fx-padding: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Focus indicator — accessible and on-brand
+   -------------------------------------------------------------------------- */
+
+.button:focused,
+.toggle-button:focused,
+.text-field:focused,
+.combo-box:focused,
+.check-box:focused,
+.slider:focused,
+.spinner:focused {
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+/* --------------------------------------------------------------------------
+   Text primitives
+   -------------------------------------------------------------------------- */
+
+.text-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -text-primary;
+}
+
+.text-heading {
+    -fx-font-size: 17px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -text-primary;
+}
+
+.text-subheading {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -text-primary;
+}
+
+.text-body {
+    -fx-font-size: 13px;
+    -fx-text-fill: -text-primary;
+}
+
+.text-secondary {
+    -fx-font-size: 12.5px;
+    -fx-text-fill: -text-secondary;
+}
+
+.text-caption {
+    -fx-font-size: 11.5px;
+    -fx-text-fill: -text-tertiary;
+}
+
+.text-mono {
+    -fx-font-family: "Cascadia Mono", "SF Mono", "JetBrains Mono", "Consolas", monospace;
+    -fx-font-size: 12px;
+}
+
+.text-accent {
+    -fx-text-fill: -accent;
+}
+
+.text-danger {
+    -fx-text-fill: -danger;
+}
+
+/* --------------------------------------------------------------------------
+   Separators
+   -------------------------------------------------------------------------- */
+
+.separator .line {
+    -fx-border-color: -border-subtle;
+    -fx-border-width: 1 0 0 0;
+}
+
+.separator:vertical .line {
+    -fx-border-width: 0 1 0 0;
+}
+
+/* --------------------------------------------------------------------------
+   Tooltips
+   -------------------------------------------------------------------------- */
+
+.tooltip {
+    -fx-background-color: -tooltip-bg;
+    -fx-text-fill: -tooltip-text;
+    -fx-background-radius: 6px;
+    -fx-padding: 7 11;
+    -fx-font-size: 12px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.32), 14, 0.16, 0, 4);
+}
+
+/* --------------------------------------------------------------------------
+   Progress indicators
+   -------------------------------------------------------------------------- */
+
+.progress-bar {
+    -fx-pref-height: 6px;
+    -fx-background-color: transparent;
+}
+
+.progress-bar > .track {
+    -fx-background-color: -surface-sunken;
+    -fx-background-radius: 999px;
+}
+
+.progress-bar > .bar {
+    -fx-background-color: -accent;
+    -fx-background-radius: 999px;
+    -fx-background-insets: 0;
+    -fx-padding: 3px;
+}
+
+/* --------------------------------------------------------------------------
+   Combo boxes, text fields, spinners
+   -------------------------------------------------------------------------- */
+
+.combo-box {
+    -fx-background-color: -surface-sunken;
+    -fx-background-radius: 6px;
+    -fx-border-color: -border-subtle;
+    -fx-border-radius: 6px;
+    -fx-border-width: 1;
+    -fx-padding: 0;
+    -fx-pref-height: 34px;
+    /* A ComboBox's preferred width is derived from the widest item in its
+       popup list, so a long entry (e.g. "Use custom version…") would widen the
+       control — and any flexible parent column with it — the moment the popup
+       opens. Allowing the control to shrink to 0 lets the surrounding layout
+       decide the width instead, which keeps columns stable while a dropdown is
+       open. */
+    -fx-min-width: 0;
+}
+
+.combo-box:hover {
+    -fx-border-color: -border-strong;
+}
+
+.combo-box .list-cell {
+    -fx-text-fill: -text-primary;
+    -fx-padding: 0 10 0 10;
+    -fx-background-color: transparent;
+    -fx-font-size: 13px;
+}
+
+.combo-box .arrow,
+.combo-box .arrow-button {
+    -fx-background-color: transparent;
+}
+
+.combo-box .arrow {
+    -fx-background-color: -text-secondary;
+    -fx-shape: "M 0 0 L 4 4 L 8 0 Z";
+    -fx-padding: 3 0 0 0;
+    -fx-scale-x: 1.4;
+    -fx-scale-y: 1.4;
+}
+
+.combo-box-popup > .list-view {
+    -fx-background-color: -surface-raised;
+    -fx-background-radius: 10px;
+    -fx-border-color: -border-strong;
+    -fx-border-radius: 10px;
+    -fx-border-width: 1;
+    -fx-padding: 4;
+    -fx-effect: dropshadow(gaussian, -shadow-color, 22, 0.14, 0, 8);
+}
+
+.combo-box-popup > .list-view > .virtual-flow > .clipped-container > .sheet > .list-cell {
+    -fx-background-color: transparent;
+    -fx-background-radius: 6px;
+    -fx-text-fill: -text-primary;
+    -fx-padding: 8 10;
+}
+
+.combo-box-popup > .list-view > .virtual-flow > .clipped-container > .sheet > .list-cell:hover {
+    -fx-background-color: -surface-hover;
+}
+
+.combo-box-popup > .list-view > .virtual-flow > .clipped-container > .sheet > .list-cell:filled:selected {
+    -fx-background-color: -accent-soft;
+    -fx-text-fill: -accent-text;
+}
+
+.text-field {
+    -fx-background-color: -surface-sunken;
+    -fx-background-radius: 6px;
+    -fx-border-color: -border-subtle;
+    -fx-border-radius: 6px;
+    -fx-border-width: 1;
+    -fx-text-fill: -text-primary;
+    -fx-prompt-text-fill: -text-tertiary;
+    -fx-padding: 8 11;
+    -fx-pref-height: 34px;
+}
+
+.text-field:hover {
+    -fx-border-color: -border-strong;
+}
+
+.text-field:focused {
+    -fx-border-color: -accent;
+    -fx-background-color: -surface-base;
+}
+
+.spinner {
+    -fx-background-color: -surface-sunken;
+    -fx-background-radius: 6px;
+    -fx-border-color: -border-subtle;
+    -fx-border-radius: 6px;
+    -fx-border-width: 1;
+}
+
+.spinner .text-field {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.spinner .increment-arrow-button,
+.spinner .decrement-arrow-button {
+    -fx-background-color: transparent;
+}
+
+.spinner .increment-arrow,
+.spinner .decrement-arrow {
+    -fx-background-color: -text-secondary;
+}
+
+/* --------------------------------------------------------------------------
+   Checkboxes — custom visual
+   -------------------------------------------------------------------------- */
+
+.check-box {
+    -fx-text-fill: -text-primary;
+    -fx-font-size: 13px;
+}
+
+.check-box > .box {
+    -fx-background-color: -surface-sunken;
+    -fx-background-radius: 5px;
+    -fx-border-color: -border-strong;
+    -fx-border-radius: 5px;
+    -fx-border-width: 1.5;
+    -fx-padding: 3;
+    -fx-min-width: 20;
+    -fx-pref-width: 20;
+    -fx-max-width: 20;
+    -fx-min-height: 20;
+    -fx-pref-height: 20;
+    -fx-max-height: 20;
+    -fx-background-insets: 0;
+}
+
+.check-box:hover > .box {
+    -fx-border-color: -accent-muted;
+}
+
+.check-box:selected > .box {
+    -fx-background-color: -accent;
+    -fx-border-color: -accent;
+}
+
+.check-box:selected > .box > .mark {
+    -fx-background-color: -accent-contrast;
+}
+
+.check-box > .box > .mark {
+    -fx-background-color: transparent;
+    -fx-shape: "M 0 4 L 3 7 L 9 0 L 10.5 1.5 L 3 10 L -1.5 5 Z";
+    -fx-padding: 0;
+    -fx-min-width: 11;
+    -fx-pref-width: 11;
+    -fx-max-width: 11;
+    -fx-min-height: 11;
+    -fx-pref-height: 11;
+    -fx-max-height: 11;
+    -fx-scale-x: 1;
+    -fx-scale-y: 1;
+}
+
+/* --------------------------------------------------------------------------
+   Sliders
+   -------------------------------------------------------------------------- */
+
+/* Sliders — the track must never overflow its container, so it is given an
+   explicit radius that matches the 6px bar height, and the whole control is
+   width-flexible. The thumb is inset so it stays inside the row. */
+.slider {
+    -fx-padding: 7 0 7 0;
+    -fx-pref-width: 260px;
+    -fx-max-width: Infinity;
+    -fx-cursor: hand;
+}
+
+.slider .track {
+    -fx-background-color: -surface-sunken;
+    -fx-background-radius: 3px;
+    -fx-pref-height: 6px;
+    -fx-background-insets: 0;
+}
+
+.slider:hover .track {
+    -fx-background-color: -surface-active;
+}
+
+.slider .thumb {
+    -fx-background-color: -accent;
+    -fx-background-radius: 999px;
+    -fx-pref-width: 16px;
+    -fx-pref-height: 16px;
+    -fx-background-insets: 0;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.28), 5, 0.2, 0, 1);
+}
+
+.slider .thumb:hover {
+    -fx-background-color: -accent-hover;
+}
+
+.slider .thumb:pressed {
+    -fx-background-color: -accent-pressed;
+}
+
+.slider:focused .thumb {
+    -fx-effect: dropshadow(gaussian, -accent, 10, 0.35, 0, 0);
+}
+
+.slider .axis {
+    -fx-tick-label-fill: -text-tertiary;
+    -fx-font-size: 10.5px;
+}
+
+.slider .axis-tick-mark,
+.slider .axis-minor-tick-mark {
+    -fx-stroke: -border-subtle;
+}
+
+/* --------------------------------------------------------------------------
+   Context menus
+   -------------------------------------------------------------------------- */
+
+.context-menu {
+    -fx-background-color: -surface-raised;
+    -fx-background-radius: 10px;
+    -fx-border-color: -border-strong;
+    -fx-border-radius: 10px;
+    -fx-border-width: 1;
+    -fx-padding: 5;
+    -fx-effect: dropshadow(gaussian, -shadow-color, 24, 0.15, 0, 8);
+}
+
+.menu-item {
+    -fx-background-radius: 6px;
+    -fx-padding: 8 12;
+}
+
+.menu-item .label {
+    -fx-text-fill: -text-primary;
+    -fx-font-size: 13px;
+}
+
+.menu-item:focused {
+    -fx-background-color: -accent-soft;
+}
+
+.menu-item:focused .label {
+    -fx-text-fill: -accent-text;
+}
+
+.menu-item:disabled .label {
+    -fx-text-fill: -text-tertiary;
+}
+
+.context-menu .separator .line {
+    -fx-border-color: -border-subtle;
+    -fx-border-width: 1 0 0 0;
+}
+
+/* --------------------------------------------------------------------------
+   Utility helpers
+   -------------------------------------------------------------------------- */
+
+.fade-in {
+    -fx-opacity: 0;
+}
+
+.no-padding {
+    -fx-padding: 0;
+}
+
+.transparent-bg {
+    -fx-background-color: transparent;
+}
+
+.cursor-hand {
+    -fx-cursor: hand;
+}
+
+.cursor-move {
+    -fx-cursor: move;
+}

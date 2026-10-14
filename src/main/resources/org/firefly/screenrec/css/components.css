@@ -1,0 +1,1103 @@
+/* ==========================================================================
+   ScreenRecorder — Components
+   Buttons, toggles, segmented controls, record button, control bar, sidebar.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Buttons
+   -------------------------------------------------------------------------- */
+
+/* Every button variant declares ALL interactive states explicitly, so no
+   state ever falls back to the default Modena look. The generic
+   .button:hover border only applies to plain buttons — variants that opt
+   out of a border restate -fx-border-color: transparent on hover. */
+
+.button {
+    -fx-background-color: -surface-raised;
+    -fx-background-radius: 6px;
+    -fx-border-color: -border-subtle;
+    -fx-border-radius: 6px;
+    -fx-border-width: 1;
+    -fx-text-fill: -text-primary;
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-padding: 9 16;
+    -fx-cursor: hand;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-background-insets: 0;
+}
+
+.button:hover {
+    -fx-background-color: -surface-hover;
+    -fx-border-color: -border-strong;
+}
+
+.button:pressed {
+    -fx-background-color: -surface-active;
+    -fx-border-color: -border-strong;
+}
+
+.button:focused {
+    -fx-border-color: -accent;
+}
+
+.button:disabled {
+    -fx-opacity: 0.42;
+    -fx-cursor: default;
+}
+
+/* Primary action */
+.button-primary {
+    -fx-background-color: -accent;
+    -fx-border-color: transparent;
+    -fx-text-fill: -accent-contrast;
+    -fx-effect: dropshadow(gaussian, -accent-shadow-34, 16, 0.20, 0, 4);
+}
+
+.button-primary:hover {
+    -fx-background-color: -accent-hover;
+    -fx-border-color: transparent;
+    -fx-effect: dropshadow(gaussian, -accent-shadow-46, 20, 0.24, 0, 6);
+}
+
+.button-primary:pressed {
+    -fx-background-color: -accent-pressed;
+    -fx-border-color: transparent;
+    -fx-effect: dropshadow(gaussian, -accent-shadow-30, 12, 0.2, 0, 2);
+}
+
+.button-primary:focused {
+    -fx-border-color: transparent;
+}
+
+/* Secondary / brand action */
+.button-brand {
+    -fx-background-color: -brand;
+    -fx-border-color: transparent;
+    -fx-text-fill: #ffffff;
+}
+
+.button-brand:hover {
+    -fx-background-color: -brand-hover;
+    -fx-border-color: transparent;
+}
+
+.button-brand:pressed {
+    -fx-background-color: -brand-hover;
+    -fx-border-color: transparent;
+    -fx-opacity: 0.9;
+}
+
+.button-brand:focused {
+    -fx-border-color: transparent;
+}
+
+/* Ghost button — borderless */
+.button-ghost {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-text-fill: -text-secondary;
+    -fx-font-weight: 500;
+}
+
+.button-ghost:hover {
+    -fx-background-color: -surface-hover;
+    -fx-border-color: transparent;
+    -fx-text-fill: -text-primary;
+}
+
+.button-ghost:pressed {
+    -fx-background-color: -surface-active;
+    -fx-border-color: transparent;
+    -fx-text-fill: -text-primary;
+}
+
+.button-ghost:focused {
+    -fx-border-color: transparent;
+}
+
+/* Danger */
+.button-danger {
+    -fx-background-color: -danger-soft;
+    -fx-border-color: transparent;
+    -fx-text-fill: -danger;
+}
+
+.button-danger:hover {
+    -fx-background-color: -danger;
+    -fx-border-color: transparent;
+    -fx-text-fill: #ffffff;
+}
+
+.button-danger:pressed {
+    -fx-background-color: -danger;
+    -fx-border-color: transparent;
+    -fx-text-fill: #ffffff;
+    -fx-opacity: 0.88;
+}
+
+.button-danger:focused {
+    -fx-border-color: transparent;
+}
+
+/* Subtle filled */
+.button-subtle {
+    -fx-background-color: -surface-hover;
+    -fx-border-color: transparent;
+}
+
+.button-subtle:hover {
+    -fx-background-color: -surface-active;
+    -fx-border-color: transparent;
+}
+
+.button-subtle:pressed {
+    -fx-background-color: -surface-sunken;
+    -fx-border-color: transparent;
+}
+
+.button-subtle:focused {
+    -fx-border-color: transparent;
+}
+
+/* Icon-only button */
+.button-icon {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 9;
+    -fx-background-radius: 7px;
+}
+
+.button-icon:hover {
+    -fx-background-color: -surface-hover;
+    -fx-border-color: transparent;
+}
+
+.button-icon:pressed {
+    -fx-background-color: -surface-active;
+    -fx-border-color: transparent;
+}
+
+.button-icon:focused {
+    -fx-border-color: transparent;
+}
+
+/* Sizes */
+.button-sm {
+    -fx-padding: 6 11;
+    -fx-font-size: 12px;
+}
+
+.button-lg {
+    -fx-padding: 12 22;
+    -fx-font-size: 14.5px;
+}
+
+/* --------------------------------------------------------------------------
+   Segmented control
+   -------------------------------------------------------------------------- */
+
+.segmented {
+    -fx-background-color: -surface-sunken;
+    -fx-background-radius: 6px;
+    -fx-border-color: -border-subtle;
+    -fx-border-radius: 6px;
+    -fx-border-width: 1;
+    -fx-padding: 3;
+    -fx-spacing: 3;
+}
+
+/* Segmented items are ToggleButtons, so Modena's own .toggle-button rules
+   would otherwise bleed through. A ToggleButton draws a MULTI-LAYER
+   background (highlight + outer border + inner border + body) with matching
+   insets; replacing only -fx-background-color leaves those layers painted on
+   top, which is why a supposedly solid accent fill read as "a faint red
+   trace". Every layer, inset and focus ring is neutralised here so only our
+   own single-layer paint survives. */
+.segmented .toggle-button,
+.segmented .segmented-item {
+    -fx-background-color: transparent;
+    -fx-background-radius: 5px;
+    -fx-background-insets: 0;
+    -fx-text-fill: -text-secondary;
+    -fx-font-size: 12.5px;
+    -fx-font-weight: 600;
+    -fx-padding: 7 15;
+    -fx-cursor: hand;
+    -fx-border-color: transparent;
+    -fx-border-width: 2;
+    -fx-border-insets: 0;
+    -fx-border-radius: 5px;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+/* Selected state is carried by an explicit BOX: a 2px accent border around a
+   tinted fill, plus accent-coloured bold text. Three signals (border, fill,
+   text colour) change together, so the choice is unmistakable on both light
+   and dark surfaces — and it reads as a framed box rather than a subtle wash.
+
+   NOTE ON SPECIFICITY: these selectors are written as
+   `.segmented .segmented-item:selected`, NOT `.segmented-item:selected`.
+   A bare `.segmented-item:selected` has the same specificity as the base
+   `.segmented .toggle-button` rule above (one class + one pseudo-class vs
+   two classes), so the cascade order decided the winner and the base
+   transparent background kept winning — the selected state never showed.
+   Prefixing with `.segmented` makes the selected rules strictly more
+   specific so they always take effect. */
+.segmented .segmented-item:selected {
+    -fx-background-color: -accent-soft;
+    -fx-background-insets: 0;
+    -fx-border-color: -accent;
+    -fx-border-width: 2;
+    -fx-border-insets: 0;
+    -fx-text-fill: -accent-text;
+    -fx-font-weight: bold;
+    -fx-effect: none;
+}
+
+.segmented .segmented-item:hover {
+    -fx-text-fill: -text-primary;
+    -fx-background-color: -surface-hover;
+    -fx-border-color: transparent;
+}
+
+.segmented .segmented-item:selected:hover {
+    -fx-background-color: -accent-soft;
+    -fx-background-insets: 0;
+    -fx-border-color: -accent-hover;
+    -fx-border-width: 2;
+    -fx-text-fill: -accent-text;
+    -fx-font-weight: bold;
+    -fx-effect: none;
+}
+
+.segmented .segmented-item:pressed {
+    -fx-background-color: -surface-active;
+    -fx-border-color: transparent;
+    -fx-text-fill: -text-primary;
+}
+
+.segmented .segmented-item:selected:pressed {
+    -fx-background-color: -accent-soft;
+    -fx-border-color: -accent-pressed;
+    -fx-border-width: 2;
+    -fx-text-fill: -accent-text;
+}
+
+/* Focus must not add Modena's focus ring on top of the border, or the box
+   edges blur. The selected box already communicates state. */
+.segmented .segmented-item:focused {
+    -fx-background-insets: 0;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-effect: none;
+}
+
+.segmented .segmented-item:selected:focused {
+    -fx-background-color: -accent-soft;
+    -fx-background-insets: 0;
+    -fx-border-color: -accent;
+    -fx-border-width: 2;
+    -fx-text-fill: -accent-text;
+    -fx-font-weight: bold;
+    -fx-effect: none;
+}
+
+.segmented .segmented-item-active {
+    -fx-background-color: -accent-soft;
+    -fx-background-insets: 0;
+    -fx-border-color: -accent;
+    -fx-border-width: 2;
+    -fx-text-fill: -accent-text;
+    -fx-font-weight: bold;
+}
+
+/* --------------------------------------------------------------------------
+   Toggle switch
+   -------------------------------------------------------------------------- */
+
+.toggle-switch {
+    -fx-background-color: -border-strong;
+    -fx-background-radius: 999px;
+    -fx-pref-width: 42px;
+    -fx-pref-height: 24px;
+    -fx-min-width: 42px;
+    -fx-min-height: 24px;
+    -fx-cursor: hand;
+    -fx-border-color: transparent;
+    -fx-background-insets: 0;
+}
+
+.toggle-switch:hover {
+    -fx-background-color: -text-tertiary;
+}
+
+.toggle-switch:selected {
+    -fx-background-color: -accent;
+}
+
+.toggle-switch:selected:hover {
+    -fx-background-color: -accent-hover;
+}
+
+.toggle-switch:pressed,
+.toggle-switch:selected:pressed {
+    -fx-opacity: 0.85;
+}
+
+.toggle-switch > .toggle-thumb {
+    /* The knob is a Circle (Shape), not a Region: use fill, not background. */
+    -fx-fill: -toggle-thumb-color;
+    -fx-stroke: rgba(0, 0, 0, 0.08);
+    -fx-stroke-width: 0.5;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.30), 4, 0.2, 0, 1);
+}
+
+/* --------------------------------------------------------------------------
+   Big record button
+   -------------------------------------------------------------------------- */
+
+.record-button {
+    -fx-background-color: -accent-gradient;
+    -fx-background-radius: 999px;
+    /* Modena's default .button paints multiple background layers with
+       their own insets. Without resetting the insets the leftover
+       highlight/shadow layers shift on hover, which reads as a jump.
+       Flattening to a single layer makes hover a smooth shadow-only
+       change. */
+    -fx-background-insets: 0;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-padding: 14 30;
+    -fx-cursor: hand;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-effect: dropshadow(gaussian, -accent-shadow-42, 22, 0.24, 0, 6);
+}
+
+/* Hover only deepens the glow — geometry and background stay put, so
+   there is no visual jump. */
+.record-button:hover {
+    -fx-background-color: -accent-gradient;
+    -fx-effect: dropshadow(gaussian, -accent-shadow-62, 26, 0.28, 0, 7);
+}
+
+.record-button:pressed {
+    -fx-background-color: -accent-pressed;
+    -fx-effect: dropshadow(gaussian, -accent-shadow-30, 12, 0.18, 0, 3);
+}
+
+.record-button:focused {
+    -fx-border-color: transparent;
+}
+
+.record-button:disabled {
+    -fx-opacity: 0.45;
+    -fx-cursor: default;
+}
+
+/* --------------------------------------------------------------------------
+   Recording indicator
+   -------------------------------------------------------------------------- */
+
+.recording-badge {
+    -fx-background-color: -accent-soft;
+    -fx-background-radius: 999px;
+    -fx-padding: 6 14;
+}
+
+.recording-dot {
+    -fx-fill: -accent;
+}
+
+.recording-timer {
+    -fx-font-family: "Cascadia Mono", "SF Mono", "Consolas", monospace;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -text-primary;
+}
+
+/* --------------------------------------------------------------------------
+   Source / monitor cards
+   -------------------------------------------------------------------------- */
+
+.source-card {
+    -fx-background-color: -surface-raised;
+    -fx-background-radius: 10px;
+    -fx-border-color: -border-subtle;
+    -fx-border-radius: 10px;
+    -fx-border-width: 1.5;
+    -fx-padding: 14;
+    -fx-cursor: hand;
+    -fx-min-width: 150px;
+}
+
+.source-card:hover {
+    -fx-border-color: -border-strong;
+    -fx-background-color: -surface-hover;
+}
+
+.source-card-selected {
+    -fx-border-color: -accent;
+    -fx-background-color: -accent-soft;
+}
+
+.source-card-title {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -text-primary;
+}
+
+.source-card-subtitle {
+    -fx-font-size: 11px;
+    -fx-text-fill: -text-secondary;
+}
+
+/* --------------------------------------------------------------------------
+   Sidebar navigation
+   -------------------------------------------------------------------------- */
+
+.nav-item {
+    -fx-background-color: transparent;
+    -fx-background-radius: 6px;
+    -fx-padding: 10 14;
+    -fx-spacing: 11;
+    -fx-cursor: hand;
+    -fx-alignment: center-left;
+}
+
+.nav-item:hover {
+    -fx-background-color: -sidebar-item-hover;
+}
+
+.nav-item-active {
+    -fx-background-color: -sidebar-item-active;
+}
+
+.nav-item-label {
+    -fx-font-size: 13.5px;
+    -fx-font-weight: 600;
+    -fx-text-fill: -text-secondary;
+}
+
+.nav-item-active .nav-item-label {
+    -fx-text-fill: -accent;
+}
+
+.nav-item-active .nav-icon {
+    -fx-fill: -accent;
+}
+
+.nav-icon {
+    -fx-fill: -text-secondary;
+}
+
+/* --------------------------------------------------------------------------
+   Floating control bar
+   -------------------------------------------------------------------------- */
+
+.control-bar {
+    -fx-background-color: -surface-overlay;
+    -fx-background-radius: 22px;
+    /* Border kept transparent (not removed) so the 1px inset stays reserved
+       and toggling it never shifts the capsule's layout width. */
+    -fx-border-color: transparent;
+    -fx-border-radius: 22px;
+    -fx-border-width: 1;
+    -fx-padding: 5 10;
+    -fx-spacing: 7;
+    -fx-effect: null;
+}
+
+/*
+ * The control bar's buttons carry both the "button" style class and their own
+ * modifier class, so the global `.button:pressed` / `.button:focused` rules
+ * (border-strong / accent outline) leak in and flash a hard ring on click.
+ * The `.control-bar` prefix raises specificity to win that tie.
+ */
+.control-bar .button,
+.control-bar .control-bar-button {
+    -fx-border-color: transparent;
+}
+
+.control-bar .button:hover,
+.control-bar .button:pressed,
+.control-bar .button:focused,
+.control-bar .control-bar-button:hover,
+.control-bar .control-bar-button:pressed,
+.control-bar .control-bar-button:focused {
+    -fx-border-color: transparent;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+.control-bar-button {
+    -fx-background-color: -surface-hover;
+    -fx-background-radius: 14px;
+    -fx-border-color: transparent;
+    -fx-padding: 5;
+    -fx-cursor: hand;
+}
+
+.control-bar-button:hover {
+    -fx-background-color: -surface-active;
+}
+
+.control-bar-button:pressed {
+    -fx-background-color: -surface-active;
+}
+
+.control-bar-stop {
+    -fx-background-color: -accent;
+    -fx-background-radius: 14px;
+    -fx-padding: 5 12;
+}
+
+.control-bar-stop:hover {
+    -fx-background-color: -accent-hover;
+}
+
+.control-bar-stop:pressed {
+    -fx-background-color: derive(-accent, -18%);
+}
+
+/* --------------------------------------------------------------------------
+   Region selector overlay
+   -------------------------------------------------------------------------- */
+
+.region-overlay {
+    -fx-background-color: rgba(6, 8, 12, 0.55);
+}
+
+.region-selection {
+    -fx-stroke: -accent;
+    -fx-stroke-width: 2;
+    -fx-fill: transparent;
+}
+
+.region-dim {
+    -fx-fill: rgba(4, 6, 10, 0.52);
+}
+
+.region-dim-clear {
+    -fx-fill: transparent;
+}
+
+.region-hint {
+    -fx-background-color: -surface-overlay;
+    -fx-background-radius: 6px;
+    -fx-padding: 7 13;
+    -fx-text-fill: -text-primary;
+    -fx-font-size: 12.5px;
+    -fx-effect: dropshadow(gaussian, -shadow-color, 16, 0.2, 0, 5);
+}
+
+.region-size-badge {
+    -fx-background-color: -accent;
+    -fx-background-radius: 5px;
+    -fx-padding: 4 9;
+    -fx-text-fill: #ffffff;
+    -fx-font-family: "Cascadia Mono", "Consolas", monospace;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.loupe {
+    -fx-border-color: -accent;
+    -fx-border-width: 2;
+    -fx-border-radius: 999px;
+    -fx-background-radius: 999px;
+}
+
+/* --------------------------------------------------------------------------
+   Countdown overlay
+   -------------------------------------------------------------------------- */
+
+.countdown-overlay {
+    -fx-background-color: rgba(6, 8, 12, 0.60);
+}
+
+.countdown-number {
+    -fx-font-size: 130px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ffffff;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.6), 30, 0.4, 0, 6);
+}
+
+.countdown-caption {
+    -fx-font-size: 17px;
+    -fx-text-fill: rgba(255, 255, 255, 0.88);
+}
+
+/* --------------------------------------------------------------------------
+   Toasts
+   -------------------------------------------------------------------------- */
+
+.toast {
+    -fx-background-color: -surface-overlay;
+    -fx-background-radius: 10px;
+    -fx-border-color: -border-strong;
+    -fx-border-radius: 10px;
+    -fx-border-width: 1;
+    -fx-padding: 13 17;
+    -fx-spacing: 11;
+    -fx-effect: dropshadow(gaussian, -shadow-color, 26, 0.2, 0, 9);
+    -fx-max-width: 400px;
+}
+
+.toast-success {
+    -fx-border-color: -success;
+}
+
+.toast-error {
+    -fx-border-color: -danger;
+}
+
+.toast-warning {
+    -fx-border-color: -warning;
+}
+
+.toast-title {
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+    -fx-text-fill: -text-primary;
+}
+
+.toast-message {
+    -fx-font-size: 12.5px;
+    -fx-text-fill: -text-secondary;
+}
+
+/* --------------------------------------------------------------------------
+   Library
+   -------------------------------------------------------------------------- */
+
+.clip-card {
+    -fx-background-color: -surface-raised;
+    -fx-background-radius: 10px;
+    -fx-border-color: -border-subtle;
+    -fx-border-radius: 10px;
+    -fx-border-width: 1;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.18), 8, 0.08, 0, 2);
+}
+
+.clip-card:hover {
+    -fx-border-color: -accent;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.28), 16, 0.14, 0, 5);
+}
+
+.clip-thumb {
+    -fx-background-color: -surface-sunken;
+    -fx-background-radius: 10px 10px 0 0;
+}
+
+.clip-duration {
+    -fx-background-color: rgba(6, 8, 12, 0.80);
+    -fx-background-radius: 5px;
+    -fx-padding: 3 7;
+    -fx-text-fill: #ffffff;
+    -fx-font-family: "Cascadia Mono", "Consolas", monospace;
+    -fx-font-size: 11px;
+}
+
+.clip-title {
+    -fx-font-size: 12.5px;
+    -fx-font-weight: 600;
+    -fx-text-fill: -text-primary;
+}
+
+.clip-meta {
+    -fx-font-size: 11px;
+    -fx-text-fill: -text-tertiary;
+}
+
+/* --------------------------------------------------------------------------
+   Empty state
+   -------------------------------------------------------------------------- */
+
+.empty-state-icon {
+    -fx-fill: -text-tertiary;
+    -fx-opacity: 0.5;
+}
+
+.empty-state-title {
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -text-secondary;
+}
+
+.empty-state-text {
+    -fx-font-size: 12.5px;
+    -fx-text-fill: -text-tertiary;
+    -fx-text-alignment: center;
+}
+
+/* --------------------------------------------------------------------------
+   Status / info chips
+   -------------------------------------------------------------------------- */
+
+.chip {
+    -fx-background-color: -surface-sunken;
+    -fx-background-radius: 999px;
+    -fx-border-color: -border-subtle;
+    -fx-border-radius: 999px;
+    -fx-border-width: 1;
+    -fx-padding: 5 12;
+    -fx-font-size: 11.5px;
+    -fx-text-fill: -text-secondary;
+}
+
+.chip-success {
+    -fx-background-color: -success-soft;
+    -fx-border-color: transparent;
+    -fx-text-fill: -success;
+}
+
+.chip-warning {
+    -fx-background-color: -warning-soft;
+    -fx-border-color: transparent;
+    -fx-text-fill: -warning;
+}
+
+.chip-danger {
+    -fx-background-color: -danger-soft;
+    -fx-border-color: transparent;
+    -fx-text-fill: -danger;
+}
+
+.chip-accent {
+    -fx-background-color: -accent-soft;
+    -fx-border-color: transparent;
+    -fx-text-fill: -accent-text;
+}
+
+/* --------------------------------------------------------------------------
+   Title bar (custom window chrome)
+   -------------------------------------------------------------------------- */
+
+.title-bar {
+    -fx-background-color: -surface-deep;
+    -fx-padding: 5 10 5 14;
+    -fx-spacing: 6;
+    -fx-min-height: 46px;
+    -fx-pref-height: 46px;
+}
+
+.title-bar-title {
+    -fx-font-size: 12.5px;
+    -fx-font-weight: 600;
+    -fx-text-fill: -text-secondary;
+}
+
+.window-control {
+    -fx-background-color: transparent;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+    -fx-min-width: 46px;
+    -fx-min-height: 34px;
+    -fx-pref-width: 46px;
+    -fx-pref-height: 34px;
+    -fx-cursor: hand;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+/* An SVGPath with no fill rule defaults to solid black, which is invisible
+   on the dark title bar. These icons must state their own colour. */
+.window-control .svg-path,
+.window-control .icon-holder .svg-path {
+    -fx-fill: -text-secondary;
+}
+
+.window-control:hover {
+    -fx-background-color: -surface-hover;
+}
+
+.window-control:hover .svg-path {
+    -fx-fill: -text-primary;
+}
+
+.window-control-close:hover {
+    -fx-background-color: #e81123;
+}
+
+.window-control-close:hover .svg-path {
+    -fx-fill: #ffffff;
+}
+
+/* --------------------------------------------------------------------------
+   Preview / player
+   -------------------------------------------------------------------------- */
+
+.preview-surface {
+    -fx-background-color: #05070a;
+    -fx-background-radius: 10px;
+}
+
+.trim-track {
+    -fx-background-color: -surface-sunken;
+    -fx-background-radius: 999px;
+    -fx-pref-height: 8px;
+}
+
+.trim-range {
+    -fx-background-color: -accent-soft;
+    -fx-background-radius: 999px;
+}
+
+.trim-handle {
+    -fx-background-color: -accent;
+    -fx-background-radius: 3px;
+    -fx-pref-width: 8px;
+    -fx-cursor: h-resize;
+}
+
+/* --------------------------------------------------------------------------
+   Misc
+   -------------------------------------------------------------------------- */
+
+.divider {
+    -fx-background-color: -border-subtle;
+    -fx-pref-height: 1;
+    -fx-min-height: 1;
+}
+
+.badge-count {
+    -fx-background-color: -accent;
+    -fx-background-radius: 999px;
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 10.5px;
+    -fx-font-weight: bold;
+    -fx-padding: 2 7;
+}
+
+.section-label {
+    -fx-font-size: 11.5px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -text-tertiary;
+}
+
+.hero-gradient {
+    -fx-background-color: -accent-gradient;
+    -fx-background-radius: 14px;
+}
+
+/* ------------------------------------------------------------------
+   Application shell & layout
+   ------------------------------------------------------------------ */
+
+.app-root {
+    -fx-background-color: -surface-base;
+}
+
+/* Invisible grab strips along the window edges and corners. They sit above
+   the whole UI in the root stack, so they must not paint anything — only
+   provide a cursor and a drag target. */
+.resize-handle {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-border-width: 0;
+    -fx-padding: 0;
+}
+
+/* In-window tooltip. Rendered as a plain styled label instead of a floating
+   popup, which is what keeps hints from flickering on an undecorated stage. */
+.tip-bubble {
+    -fx-background-insets: 0;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-border-radius: 6px;
+    -fx-background-color: -tooltip-bg;
+    -fx-text-fill: -tooltip-text;
+    -fx-background-radius: 6px;
+    -fx-padding: 7 11;
+    -fx-font-size: 12px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.32), 14, 0.16, 0, 4);
+}
+
+.content-host {
+    -fx-background-color: -surface-base;
+}
+
+.app-content {
+    -fx-background-color: -surface-base;
+    -fx-background: -surface-base;
+}
+
+.app-content > .viewport {
+    -fx-background-color: -surface-base;
+}
+
+/* Elevated surface used for grouped settings. */
+.card {
+    -fx-background-color: -surface-raised;
+    -fx-background-radius: 14px;
+    -fx-border-color: -border-subtle;
+    -fx-border-radius: 14px;
+    -fx-border-width: 1;
+}
+
+/* ------------------------------------------------------------------
+   Status text
+   ------------------------------------------------------------------ */
+
+.status-headline {
+    -fx-font-size: 14.5px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -text-primary;
+}
+
+.status-ok {
+    -fx-text-fill: -success;
+}
+
+.status-warning {
+    -fx-text-fill: -warning;
+}
+
+.status-error {
+    -fx-text-fill: -danger;
+}
+
+/* ------------------------------------------------------------------
+   Editor
+   ------------------------------------------------------------------ */
+
+.editor-preview {
+    -fx-background-color: -surface-sunken;
+    -fx-background-radius: 14px;
+    -fx-border-color: -border-subtle;
+    -fx-border-radius: 14px;
+    -fx-border-width: 1;
+}
+
+.trim-track {
+    -fx-pref-height: 6;
+    -fx-background-color: -surface-sunken;
+    -fx-background-radius: 999px;
+}
+
+.trim-handle {
+    -fx-background-color: -accent;
+    -fx-background-radius: 999px;
+    -fx-pref-width: 14;
+    -fx-pref-height: 14;
+    -fx-cursor: h-resize;
+}
+
+.trim-range {
+    -fx-background-color: -accent-soft;
+    -fx-background-radius: 999px;
+}
+
+/* DialogPane has its own Modena header and content rules. Theme every area
+   explicitly: styling buttons alone leaves a white header and dark body text. */
+.dialog-pane {
+    -fx-background-color: -surface-base;
+    -fx-padding: 0;
+}
+
+.dialog-pane > .header-panel {
+    -fx-background-color: -surface-raised;
+    -fx-background-insets: 0;
+    -fx-padding: 18 22;
+}
+
+.dialog-pane > .header-panel > .label {
+    -fx-text-fill: -text-primary;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-wrap-text: true;
+}
+
+.dialog-pane > .header-panel > .graphic-container {
+    -fx-padding: 0;
+    -fx-pref-width: 0;
+    -fx-max-width: 0;
+    -fx-opacity: 0;
+}
+
+.dialog-pane > .content.label,
+.dialog-pane > .content .label {
+    -fx-text-fill: -text-secondary;
+    -fx-font-size: 13px;
+    -fx-padding: 18 22;
+    -fx-wrap-text: true;
+}
+
+.dialog-pane > .button-bar > .container {
+    -fx-background-color: -surface-base;
+    -fx-padding: 0 22 18 22;
+}
+
+.dialog-pane .button {
+    -fx-min-height: 34;
+    -fx-padding: 7 18;
+}
+
+/* Rounded thumbnail area inside library cards. */
+.clip-thumb {
+    -fx-background-color: -surface-sunken;
+    -fx-background-radius: 14px 14px 0 0;
+}
+
+/* Theme palette: tactile color tiles with a stable selection mark. */
+.accent-swatch {
+    -fx-min-width: 36; -fx-pref-width: 36; -fx-max-width: 36;
+    -fx-min-height: 36; -fx-pref-height: 36; -fx-max-height: 36;
+    -fx-padding: 0; -fx-background-radius: 12; -fx-font-size: 19px;
+    -fx-font-weight: bold; -fx-border-color: rgba(255,255,255,0.25);
+    -fx-border-radius: 12; -fx-cursor: hand;
+}
+.accent-swatch:hover { -fx-effect: dropshadow(gaussian, -accent-soft, 10, 0.3, 0, 2); }
+.shortcut-input { -fx-alignment: center; -fx-cursor: hand; }
+.shortcut-input:focused { -fx-border-color: -accent; }
+
+/* RGB channels keep their own identity regardless of the selected accent. */
+.rgb-r { -rgb-channel: #ef4444; }
+.rgb-g { -rgb-channel: #22c55e; }
+.rgb-b { -rgb-channel: #3b82f6; }
+.rgb-r .thumb, .rgb-g .thumb, .rgb-b .thumb {
+    -fx-background-color: -rgb-channel;
+}
+.rgb-r .thumb:hover, .rgb-g .thumb:hover, .rgb-b .thumb:hover {
+    -fx-background-color: derive(-rgb-channel, 15%);
+}
+.rgb-r .thumb:pressed, .rgb-g .thumb:pressed, .rgb-b .thumb:pressed {
+    -fx-background-color: derive(-rgb-channel, -15%);
+}
+.rgb-r .track, .rgb-g .track, .rgb-b .track {
+    -fx-background-color: derive(-rgb-channel, 55%);
+}
+.rgb-r:hover .track, .rgb-g:hover .track, .rgb-b:hover .track {
+    -fx-background-color: derive(-rgb-channel, 40%);
+}
+.rgb-r:focused .thumb, .rgb-g:focused .thumb, .rgb-b:focused .thumb {
+    -fx-effect: dropshadow(gaussian, -rgb-channel, 8, 0.15, 0, 0);
+}
+
+/* Playback transport stays flat in every interaction state. */
+.editor-play-button,
+.editor-play-button:hover,
+.editor-play-button:pressed,
+.editor-play-button:focused {
+    -fx-effect: none;
+}
+
+/* Linux WMs can relocate screen-sized borderless windows. Use a centered card. */
+.countdown-card {
+    -fx-background-color: rgba(6, 8, 12, 0.92);
+    -fx-background-radius: 24;
+    -fx-border-color: rgba(255, 255, 255, 0.18);
+    -fx-border-radius: 24;
+    -fx-padding: 20;
+}

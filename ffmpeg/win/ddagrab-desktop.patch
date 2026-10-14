@@ -1,0 +1,54 @@
+--- a/libavfilter/vsrc_ddagrab.c
++++ b/libavfilter/vsrc_ddagrab.c
+@@ -93,6 +93,7 @@
+     ID3D11BlendState *blend_state;
+     ID3D11BlendState *blend_state_xor;
+ 
++    int        desktop_coords;
+     int        output_idx;
+     int        draw_mouse;
+     AVRational framerate;
+@@ -109,6 +110,7 @@
+ #define OFFSET(x) offsetof(DdagrabContext, x)
+ #define FLAGS AV_OPT_FLAG_VIDEO_PARAM|AV_OPT_FLAG_FILTERING_PARAM
+ static const AVOption ddagrab_options[] = {
++    { "desktop_coords", "select output by physical desktop capture bounds", OFFSET(desktop_coords), AV_OPT_TYPE_BOOL, { .i64 = 0 }, 0, 1, FLAGS },
+     { "output_idx", "dda output index to capture", OFFSET(output_idx), AV_OPT_TYPE_INT,        { .i64 = 0    },       0, INT_MAX, FLAGS },
+     { "draw_mouse", "draw the mouse pointer",      OFFSET(draw_mouse), AV_OPT_TYPE_BOOL,       { .i64 = 1    },       0,       1, FLAGS },
+     { "framerate",  "set video frame rate",        OFFSET(framerate),  AV_OPT_TYPE_VIDEO_RATE, { .str = "30" },       0, INT_MAX, FLAGS },
+@@ -200,7 +202,34 @@
+         return AVERROR_EXTERNAL;
+     }
+ 
+-    hr = IDXGIAdapter_EnumOutputs(dxgi_adapter, dda->output_idx, &dxgi_output);
++    if (dda->desktop_coords) {
++        unsigned int i;
++        hr = DXGI_ERROR_NOT_FOUND;
++        for (i = 0; ; i++) {
++            DXGI_OUTPUT_DESC desc;
++            IDXGIOutput *candidate = NULL;
++            HRESULT result = IDXGIAdapter_EnumOutputs(dxgi_adapter, i, &candidate);
++            if (FAILED(result)) break;
++            result = IDXGIOutput_GetDesc(candidate, &desc);
++            if (SUCCEEDED(result) && desc.AttachedToDesktop &&
++                dda->offset_x >= desc.DesktopCoordinates.left &&
++                dda->offset_y >= desc.DesktopCoordinates.top &&
++                (int64_t)dda->offset_x + dda->width <= desc.DesktopCoordinates.right &&
++                (int64_t)dda->offset_y + dda->height <= desc.DesktopCoordinates.bottom) {
++                dda->offset_x -= desc.DesktopCoordinates.left;
++                dda->offset_y -= desc.DesktopCoordinates.top;
++                dda->output_idx = i;
++                dxgi_output = candidate;
++                hr = S_OK;
++                break;
++            }
++            IDXGIOutput_Release(candidate);
++        }
++        if (FAILED(hr))
++            av_log(avctx, AV_LOG_ERROR, "Capture rectangle not contained in an output on this adapter\n");
++    } else {
++        hr = IDXGIAdapter_EnumOutputs(dxgi_adapter, dda->output_idx, &dxgi_output);
++    }
+     IDXGIAdapter_Release(dxgi_adapter);
+     dxgi_adapter = NULL;
+     if (FAILED(hr)) {
