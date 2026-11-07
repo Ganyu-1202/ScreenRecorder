@@ -2,72 +2,93 @@ package org.firefly.screenrec;
 
 import javafx.application.Platform;
 import javafx.animation.PauseTransition;
-import javafx.animation.SequentialTransition;
 import javafx.util.Duration;
 import javafx.scene.input.MouseButton;
+import javafx.scene.Scene;
+import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import org.firefly.screenrec.ui.MainWindow;
 import org.junit.jupiter.api.*;
 import java.util.concurrent.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+@org.junit.jupiter.api.condition.EnabledOnOs(org.junit.jupiter.api.condition.OS.WINDOWS)
 class MainWindowInteractionTest {
     @BeforeAll static void toolkit() throws Exception {
         var ready = new CountDownLatch(1);
         try { Platform.startup(ready::countDown); } catch (IllegalStateException e) { Platform.runLater(ready::countDown); }
-        assertTrue(ready.await(10, TimeUnit.SECONDS)); Platform.setImplicitExit(false);
+        assertTrue(ready.await(10, TimeUnit.SECONDS));
+        Platform.setImplicitExit(false);
     }
-    private static Object call(Object o, String name) throws Exception {
-        var method = o.getClass().getDeclaredMethod(name); method.setAccessible(true); return method.invoke(o);
-    }
-    private static Object field(Object o, String name) throws Exception {
-        var field = o.getClass().getDeclaredField(name); field.setAccessible(true); return field.get(o);
-    }
-    @Test void restoredWindowCanMoveAndResizeWithMouse() throws Exception {
+
+    @Test void nativeWindowOwnsStateMoveAndResize() throws Exception {
         var done = new CompletableFuture<Void>();
         Platform.runLater(() -> {
-            javafx.stage.Stage stage = null;
-            try {
-                var main = new MainWindow(null, null, null, null);
-                stage = main.stage();
-                var root = (javafx.scene.layout.StackPane) field(main, "rootStack");
-                var shell = (javafx.scene.layout.BorderPane) field(main, "shell");
-                shell.setTop((javafx.scene.Node) call(main, "buildTitleBar")); root.getChildren().add(shell);
-                var scene = new javafx.scene.Scene(root, 1200, 700);
-                scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
-                org.firefly.screenrec.ui.overlay.OverlayWindow.applyStylesheets(scene);
-                stage.setScene(scene); stage.setMinWidth(880); stage.setMinHeight(600); stage.setX(200); stage.setY(150); stage.show();
-                call(main, "installResizeHandles");
-                var window = stage;
-                var robot = new javafx.scene.robot.Robot(); var original = robot.getMousePosition();
-                double[] geometry = new double[4];
-                var sequence = new SequentialTransition();
-                sequence.getChildren().add(pause(() -> {
-                    geometry[0] = window.getX(); geometry[1] = window.getY();
-                    robot.mouseMove(window.getX()+70,window.getY()+24);
-                }));
-                sequence.getChildren().add(pause(() -> robot.mousePress(MouseButton.PRIMARY)));
-                sequence.getChildren().add(pause(() -> robot.mouseMove(geometry[0]+150,geometry[1]+84)));
-                sequence.getChildren().add(pause(() -> robot.mouseRelease(MouseButton.PRIMARY)));
-                sequence.getChildren().add(pause(() -> {
-                    try {
-                        System.out.println("Moved " + geometry[0]+","+geometry[1]+" -> "+window.getX()+","+window.getY());
-                        assertEquals(geometry[0]+80,window.getX(),3); assertEquals(geometry[1]+60,window.getY(),3);
-                        geometry[2]=window.getWidth(); geometry[3]=window.getX()+window.getWidth()-3;
-                        robot.mouseMove(geometry[3],window.getY()+200);
-                    } catch(Throwable t) { done.completeExceptionally(t); }
-                }));
-                sequence.getChildren().add(pause(() -> robot.mousePress(MouseButton.PRIMARY)));
-                sequence.getChildren().add(pause(() -> robot.mouseMove(geometry[3]+80,window.getY()+200)));
-                sequence.getChildren().add(pause(() -> robot.mouseRelease(MouseButton.PRIMARY)));
-                sequence.getChildren().add(pause(() -> {
-                    try { System.out.println("Resized "+geometry[2]+" -> "+window.getWidth()); assertEquals(geometry[2]+80,window.getWidth(),3); done.complete(null); }
-                    catch(Throwable t) { done.completeExceptionally(t); }
-                    finally { window.hide(); robot.mouseMove(original); }
-                })); sequence.play();
-            } catch(Throwable t) { if(stage != null) stage.hide(); done.completeExceptionally(t); }
-        }); done.get(15,TimeUnit.SECONDS);
+            Stage window = new MainWindow(null, null, null, null).stage();
+            assertEquals(StageStyle.DECORATED, window.getStyle());
+            window.setTitle("ScreenRecorder native window regression");
+            window.setScene(new Scene(new StackPane(), 950, 620));
+            window.setMinWidth(880); window.setMinHeight(600);
+            window.setX(100); window.setY(100); window.show();
+            var robot = new javafx.scene.robot.Robot();
+            var original = robot.getMousePosition();
+            double[] geometry = new double[4];
+            var steps = new java.util.ArrayDeque<Runnable>();
+            java.util.function.Consumer<Runnable> step = steps::add;
+            step.accept(() -> {
+                geometry[0] = window.getX(); geometry[1] = window.getY();
+                geometry[2] = window.getWidth(); geometry[3] = window.getHeight();
+                window.setMaximized(true);
+            });
+            step.accept(() -> {
+                assertTrue(window.isMaximized());
+                var screens = javafx.stage.Screen.getScreensForRectangle(window.getX(), window.getY(), window.getWidth(), window.getHeight());
+                var area = screens.getFirst().getVisualBounds();
+                // Windows keeps an invisible resize border outside the work area.
+                assertTrue(window.getY() + window.getHeight() <= area.getMaxY() + 12, "Maximize must not cover taskbar/dock");
+                window.setIconified(true);
+            });
+            step.accept(() -> { assertTrue(window.isIconified()); window.setIconified(false); });
+            step.accept(() -> {
+                assertTrue(window.isMaximized(), "Minimize must preserve maximize state");
+                window.setMaximized(false);
+            });
+            step.accept(() -> {
+                assertEquals(geometry[0], window.getX(), 3); assertEquals(geometry[1], window.getY(), 3);
+                assertEquals(geometry[2], window.getWidth(), 3); assertEquals(geometry[3], window.getHeight(), 3);
+                robot.mouseMove(window.getX() + 150, window.getY() + 18);
+            });
+            step.accept(() -> robot.mousePress(MouseButton.PRIMARY));
+            step.accept(() -> robot.mouseMove(geometry[0] + 160, geometry[1] + 28));
+            step.accept(() -> robot.mouseMove(geometry[0] + 230, geometry[1] + 78));
+            step.accept(() -> robot.mouseRelease(MouseButton.PRIMARY));
+            step.accept(() -> {
+                assertEquals(geometry[0] + 80, window.getX(), 4); assertEquals(geometry[1] + 60, window.getY(), 4);
+                geometry[2] = window.getWidth(); geometry[3] = window.getX() + window.getWidth() - 2;
+                robot.mouseMove(geometry[3], window.getY() + 200);
+            });
+            step.accept(() -> robot.mousePress(MouseButton.PRIMARY));
+            step.accept(() -> robot.mouseMove(geometry[3] + 10, window.getY() + 200));
+            step.accept(() -> robot.mouseMove(geometry[3] + 80, window.getY() + 200));
+            step.accept(() -> robot.mouseRelease(MouseButton.PRIMARY));
+            step.accept(() -> {
+                assertEquals(geometry[2] + 80, window.getWidth(), 4);
+                window.hide(); robot.mouseMove(original); done.complete(null);
+            });
+            runNext(steps, done, window, robot, original);
+
+        });
+        done.get(30, TimeUnit.SECONDS);
     }
-    private static PauseTransition pause(Runnable action) {
-        var p=new PauseTransition(Duration.millis(300)); p.setOnFinished(e -> action.run()); return p;
+    private static void runNext(java.util.ArrayDeque<Runnable> steps, CompletableFuture<Void> done,
+                                Stage window, javafx.scene.robot.Robot robot, javafx.geometry.Point2D original) {
+        if (done.isDone() || steps.isEmpty()) return;
+        var pause = new PauseTransition(Duration.millis(600));
+        pause.setOnFinished(e -> {
+            try { steps.remove().run(); runNext(steps, done, window, robot, original); }
+            catch (Throwable t) { robot.mouseRelease(MouseButton.PRIMARY); window.hide(); robot.mouseMove(original); done.completeExceptionally(t); }
+        });
+        pause.play();
     }
 }

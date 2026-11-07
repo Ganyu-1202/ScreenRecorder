@@ -35,6 +35,6 @@ jobs:
         with:
           name: ScreenRecorder-linux-x86_64
           path: |
-            target/ScreenRecorder-x86_64.AppImage
-            target/ScreenRecorder-x86_64.AppImage.sha256
+            target/ScreenRecorder-*-x86_64.AppImage
+            target/ScreenRecorder-*-x86_64.AppImage.sha256
             ffmpeg/linux/BUILD.txt

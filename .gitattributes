@@ -1,0 +1,3 @@
+# Linux build/test entry points must remain executable by their interpreters.
+*.sh text eol=lf
+*.py text eol=lf

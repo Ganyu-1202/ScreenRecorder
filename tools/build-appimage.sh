@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
+export PATH="/usr/sbin:/sbin:$PATH"
+VERSION=${VERSION:-1.0.14}
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
 cd "$ROOT"
 [[ $(uname -m) == x86_64 ]] || { echo 'This recipe currently targets x86_64 Linux' >&2; exit 1; }
@@ -79,6 +81,8 @@ RUN
 chmod +x "$APP/AppRun"
 TOOL=${APPIMAGETOOL:-$ROOT/tools/packaging-cache/appimagetool-x86_64.AppImage}
 [[ -x "$TOOL" ]] || { echo "AppDir prepared: $APP. Set APPIMAGETOOL to a trusted appimagetool executable." >&2; exit 1; }
-ARCH=x86_64 APPIMAGE_EXTRACT_AND_RUN=1 "$TOOL" "$APP" "$ROOT/target/ScreenRecorder-x86_64.AppImage"
-"$ROOT/target/ScreenRecorder-x86_64.AppImage" --appimage-extract-and-run --engine-version
-sha256sum "$ROOT/target/ScreenRecorder-x86_64.AppImage" > "$ROOT/target/ScreenRecorder-x86_64.AppImage.sha256"
+OUTPUT="$ROOT/target/ScreenRecorder-$VERSION-x86_64.AppImage"
+ARCH=x86_64 VERSION="$VERSION" APPIMAGE_EXTRACT_AND_RUN=1 "$TOOL" "$APP" "$OUTPUT"
+"$OUTPUT" --appimage-extract-and-run --engine-version
+(cd "$ROOT/target" && sha256sum "$(basename "$OUTPUT")" > "$(basename "$OUTPUT").sha256")
+printf 'AppImage: %s\n' "$OUTPUT"

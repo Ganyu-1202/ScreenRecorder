@@ -6,7 +6,7 @@
 
   <groupId>org.firefly.screenrec</groupId>
   <artifactId>screenrecorder</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.14</version>
   <packaging>jar</packaging>
 
   <name>ScreenRecorder</name>

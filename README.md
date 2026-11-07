@@ -1,6 +1,6 @@
 # ScreenRecorder
 
-基于 **Java 21 + JavaFX 21 + FFmpeg** 的屏幕录制应用，提供深浅色主题、自定义无边框界面、硬件编码、音频混音、素材库和内置预览／裁剪。
+基于 **Java 21 + JavaFX 21 + FFmpeg** 的屏幕录制应用，提供深浅色主题、系统原生窗口边框、硬件编码、音频混音、素材库和内置预览／裁剪。
 
 > **Windows x64 与 Linux x86_64 共用 Java 源码，原生引擎和打包流程按平台分离。** Windows 已有自包含安装流程；Linux 已提供项目专用引擎与 AppImage，并完成本地 X11 双屏环境验证。Wayland 已接入 Portal + PipeWire，但尚未完成真实桌面录制验收；macOS 发行适配尚未完成。不能把 Linux 测试通过等同于 Windows/macOS 回归通过。
 
@@ -75,9 +75,9 @@
 - Windows 保留 AWT 托盘、原有区域选择窗口、透明圆角主窗口、全屏倒计时样式和 Win32 悬浮栏捕获排除。
 - Linux 使用 GTK/AppIndicator 托盘、区域选择弹出层、普通无装饰直角主窗口和紧凑倒计时卡片。
 
-**共用代码仍有变化，因此不能宣称 Windows 完全不受影响：** 标题栏文字／图标／空白区域可拖动，最大化拖动恢复后重新启用缩放边缘，倒计时及悬浮栏按录制目标定位，悬浮栏停止录制在后台执行以避免阻塞界面。
+**主窗口改为系统原生边框：** 最大化、最小化、还原、标题栏拖动与边缘缩放由操作系统处理；Linux GTK 存在异常恢复尺寸时进行限定补偿。录制覆盖层仍使用专用无边框窗口。
 
-截至本轮本地验证，Linux 测试为 **44 项、0 失败、0 错误、3 项跳过**；此结果不代表 Windows 真机验收。Windows 仍需验证主窗口拖动／八方向缩放／最大化恢复、多显示器区域选择与倒计时、托盘、悬浮栏排除，以及录制停止封装、暂停恢复和音频采集。本轮亦未完成真实 Wayland 录制、旧版 glibc 兼容性或干净机器发行验收。
+本次 Windows Maven 测试为 **43 项、0 失败、0 错误、10 项跳过**；另验证打包应用的原生系统菜单最大化、最小化、还原及工作区边界。Linux 在 Xvfb/Openbox 上对最终 AppImage 验证了标题、图标、最大化、最小化后恢复、原位还原、标题栏拖动和右侧缩放；引擎版本检查和 GStreamer 自检通过。跳过的原生采集测试、macOS、真实 Wayland 桌面、其他窗口管理器、旧版 glibc 及干净机器安装升级仍不在本次验收范围。
 
 ## 开发与运行
 
@@ -178,18 +178,19 @@ java -jar target/ScreenRecorder.jar
 
 ```powershell
 mvn -Pfatjar clean package
-.\tools\build-installer.ps1 -Version 1.0.12
+.\tools\build-installer.ps1 -Version 1.0.14
 
 # 或明确指定其他构建目录的 JAR
-.\tools\build-installer.ps1 -Version 1.0.12 -JarPath D:\path\to\ScreenRecorder.jar
+.\tools\build-installer.ps1 -Version 1.0.14 -JarPath D:\path\to\ScreenRecorder.jar
 ```
 
-当前脚本使用 `jlink` 裁剪运行时并通过 `jpackage` 生成 EXE 安装包及应用镜像，携带 Java、JavaFX、FFmpeg 和两个原生辅助程序，正常运行无须用户另装 Java／FFmpeg。
+当前脚本使用 `jlink` 裁剪运行时并通过 `jpackage` 同时生成 EXE、MSI 安装包及应用镜像，携带 Java、JavaFX、FFmpeg 和两个原生辅助程序，正常运行无须用户另装 Java／FFmpeg。
 
 **打包前提与限制：**
 
-- 当前脚本中的 `jpackage` 路径指向本机 JDK，需按机器修改。
-- `tools/packaging-cache/temurin-jdk/` 需有打包用 JDK，`tools/packaging-cache/wix/` 需有兼容 WiX 工具链；它们不纳入版本控制。
+- 安装完整 **JDK 21**（包含 `jlink`、`jpackage`）与 **Maven 3.9+**，设置 `JAVA_HOME` 和 `PATH`。脚本优先使用 `JAVA_HOME/bin/jpackage.exe`，否则在 PATH 查找。
+- 安装 **WiX Toolset 3.11.x**，将 `candle.exe`、`light.exe` 所在目录加入 PATH；也可解压到 `tools/packaging-cache/wix/`。WiX 4/5 不能直接替代这套 JDK 21 打包工具要求的 WiX 3。
+- 可选：将完整 Temurin JDK 解压到 `tools/packaging-cache/temurin-jdk/<JDK目录>/`，用于裁剪随包运行时；未提供时使用当前 `jpackage` 所属 JDK。构建缓存不纳入版本控制。
 - 安装包为 per-machine，安装／升级通常需要系统授权；正常录制不要求管理员权限。
 - 使用固定升级 UUID；安装与升级验证时应确认保留用户设置和录制文件。
 - 输出在 `target/installer-<时间戳>/image/` 和 `output/`。
@@ -197,7 +198,7 @@ mvn -Pfatjar clean package
 
 ### Linux / macOS
 
-Linux 已提供自包含 AppImage 构建流程，产物为 `target/ScreenRecorder-x86_64.AppImage`，详见 [Linux / AppImage](#linux--appimagewindows-与-linux-共用源码)。正常使用无需另外安装 Java 或 FFmpeg，但仍依赖兼容的系统基础服务。
+Linux 已提供自包含 AppImage 构建流程，产物为 `target/ScreenRecorder-1.0.14-x86_64.AppImage`，详见 [Linux / AppImage](#linux--appimagewindows-与-linux-共用源码)。正常使用无需另外安装 Java 或 FFmpeg，但仍依赖兼容的系统基础服务。
 
 Linux `.deb`/`.rpm`、macOS `.dmg`/`.app` 尚未提供完整发行流程。macOS 仍需准备匹配架构的 JDK、JavaFX、FFmpeg 并验证权限和音频回环。生成包文件不代表所有平台功能和兼容性已验收。
 
@@ -304,15 +305,15 @@ FFmpeg、x264/x265、Java/JavaFX 及其他第三方组件保留各自许可。�
 
 ### 直接运行
 
-构建产物为 `target/ScreenRecorder-x86_64.AppImage`：
+构建产物为 `target/ScreenRecorder-1.0.14-x86_64.AppImage`：
 
 ```bash
-chmod +x ScreenRecorder-x86_64.AppImage
-./ScreenRecorder-x86_64.AppImage
+chmod +x ScreenRecorder-1.0.14-x86_64.AppImage
+./ScreenRecorder-1.0.14-x86_64.AppImage
 # 不支持 FUSE 的环境：
-./ScreenRecorder-x86_64.AppImage --appimage-extract-and-run
+./ScreenRecorder-1.0.14-x86_64.AppImage --appimage-extract-and-run
 # 查看内置引擎版本，无需系统 FFmpeg / Java：
-./ScreenRecorder-x86_64.AppImage --appimage-extract-and-run --engine-version
+./ScreenRecorder-1.0.14-x86_64.AppImage --appimage-extract-and-run --engine-version
 ```
 
 AppImage 内置 Java 21 runtime、JavaFX 原生库、项目专用 FFmpeg / ffprobe、
@@ -339,8 +340,8 @@ Maven 仅复制当前平台的引擎。AppImage 在只读挂载目录查找内�
   因此不能宣称所有 Windows 特有的窗口排除/桌面行为完全等价。
 * Linux 托盘使用独立 GTK/AppIndicator 助手，避免 AWT XEmbed 在 GNOME 上的图标异常；
   助手及客户端库随 AppImage 打包。桌面仍需支持 StatusNotifier/AppIndicator 托盘协议。
-* Linux 主窗口使用普通无装饰直角窗口，保留自绘标题栏，避免透明顶层窗口的拖动／缩放兼容性问题。
-  标题文字、图标和空白区域均可拖动；已通过实际鼠标输入验证非最大化窗口拖动和右侧边缘缩放。
+* Linux 主窗口使用系统原生装饰窗口，移除自绘标题栏和手写缩放边缘，避免与窗口管理器状态冲突。
+  标题栏行为遵循当前系统/窗口管理器；已通过实际鼠标输入验证非最大化窗口拖动和右侧边缘缩放。
 * Linux 倒计时使用目标屏幕/窗口/区域中心的紧凑卡片，避免全屏无边框窗口被窗口管理器移位。
   Windows 保留原有全屏倒计时与浮窗录制排除。
 
@@ -372,3 +373,78 @@ mvn -Dscreenrec.linux.integration=true test
 打包过程不打包 glibc 和显卡驱动；FFmpeg 配置、校验值及许可证保存在项目引擎目录。
 分发时也需要满足 FFmpeg/x264/x265 等 GPL 组件的对应源码提供义务；仅附带许可证不等于完成全部义务。
 CI 配方见 `.github/workflows/linux-appimage.yml`，Wayland 授权流程仍需 GNOME/KDE/其他目标桌面人工验收。
+
+
+### 1.0.14 窗口行为修复
+
+主窗口统一使用系统原生标题栏和边框，由 Windows、Linux 窗口管理器、macOS 管理最大化、最小化、还原、拖动和缩放；不再以手动修改窗口尺寸模拟最大化。标题使用 `app.name`，图标使用项目 `screen-recorder-*.png` 资源；Windows 启动器/安装包使用同系列 ICO，AppImage 使用同系列 PNG。录制状态提示保留在应用内容区。
+
+Linux 另有 GTK 还原边界兼容处理：仅当系统已退出最大化、但窗口仍停留在最大化尺寸时恢复此前正常几何。Windows 原生窗口和 Linux X11/Openbox 有运行验证；**macOS、真实 Wayland 桌面及不同 Linux 窗口管理器仍需实机回归**，不能将跨平台源码修复视为所有系统均已验收。录制边框、倒计时、悬浮控制条仍保持专用无边框窗口，不适用主窗口装饰。
+
+### 自行构建 Windows EXE / MSI（x64）
+
+在 Windows PowerShell 中进入仓库根目录，准备上述 JDK、Maven、WiX 3 和完整 `ffmpeg/win/`（包含 DLL、辅助程序、许可证）。不要用 Linux JAR 生成 Windows 安装包。
+
+```powershell
+$env:JAVA_HOME = "C:\Program Files\Eclipse Adoptium\jdk-21" # 改为实际 JDK 路径
+$env:Path = "$env:JAVA_HOME\bin;C:\Program Files (x86)\WiX Toolset v3.11\bin;$env:Path"
+java -version
+mvn -version
+jpackage --version
+candle -?
+
+mvn "-Pwin,fatjar" clean package
+if ($LASTEXITCODE -ne 0) { throw "Maven build failed" }
+.\tools\build-installer.ps1 -Version 1.0.14
+```
+
+脚本一次生成：
+
+- `target/installer-<时间戳>/output/ScreenRecorder-1.0.14.exe`：EXE 安装包。
+- `target/installer-<时间戳>/output/ScreenRecorder-1.0.14.msi`：MSI 安装包。
+- `target/installer-<时间戳>/image/ScreenRecorder/ScreenRecorder.exe`：免安装应用目录的启动器；分发时必须带上整个 `ScreenRecorder/` 目录，而不是只复制 EXE。
+
+安装包未签名，SmartScreen 提示不表示构建失败。构建不会自动安装或上传发布。若 PowerShell 阻止项目脚本执行，可单次使用 `powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\build-installer.ps1 -Version 1.0.14`。
+
+### 自行构建 Linux AppImage（x86_64）
+
+须在 **Linux x86_64** 上执行（Windows 可用 WSL Ubuntu 24.04）。建议把仓库放在 Linux 自有目录，如 `~/Projects/ScreenRecorder`，避免 `/mnt/c`、`/mnt/d` 的权限/时间戳问题。AppImage 不能用 Windows `jpackage` 交叉构建。
+
+Ubuntu 24.04 构建依赖：
+
+```bash
+sudo apt-get update
+sudo apt-get install -y openjdk-21-jdk maven python3 curl pkg-config squashfs-tools   gstreamer1.0-tools gstreamer1.0-plugins-base gstreamer1.0-plugins-good   gstreamer1.0-pipewire pulseaudio-utils libayatana-appindicator3-1   libgtk-3-0t64 libfuse2t64 libsndio7.0 libx264-164 libx265-199
+
+export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
+export PATH="$JAVA_HOME/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH"
+java -version
+mvn -version
+```
+
+准备完整项目 `ffmpeg/linux/`，包括 `ffmpeg`、`ffprobe`、`portal-capture`、`x11-windows`、`tray-indicator` 和许可证（必要时按 `tools/build-linux-ffmpeg.sh` 重建）。准备可信的官方 [appimagetool x86_64](https://github.com/AppImage/appimagetool/releases)，核验下载版本和校验值后放在 `tools/packaging-cache/appimagetool-x86_64.AppImage`。也可用 `APPIMAGETOOL=/绝对路径/appimagetool` 指定。建议固定工具版本及 SHA-256，避免持续发布版本漂移。
+
+```bash
+chmod +x tools/packaging-cache/appimagetool-x86_64.AppImage
+chmod +x ffmpeg/linux/{ffmpeg,ffprobe,portal-capture,x11-windows,tray-indicator}
+
+# Linux 引擎及普通测试；需要桌面环境的测试另行执行
+mvn -Plinux test
+
+# 脚本自行构建 Linux fat JAR、jlink 运行时，并捆绑动态库
+VERSION=1.0.14 bash tools/build-appimage.sh
+
+# 检查产物和捆绑引擎，不依赖宿主机安装 Java/FFmpeg
+(cd target && sha256sum -c ScreenRecorder-1.0.14-x86_64.AppImage.sha256)
+target/ScreenRecorder-1.0.14-x86_64.AppImage --appimage-extract-and-run --engine-version
+target/ScreenRecorder-1.0.14-x86_64.AppImage --appimage-extract-and-run --capture-self-test
+```
+
+产物：`target/ScreenRecorder-1.0.14-x86_64.AppImage` 及 `.sha256`。有 FUSE 时可直接运行；没有 FUSE（例如部分 WSL 环境）使用 `--appimage-extract-and-run`。基于 Ubuntu 24.04 构建的产物不保证支持更老的 glibc 系统；须在计划支持的最老发行版构建并实测。公共分发 GPL 引擎时，须提供精确对应的源码及第三方许可证，不能只附上游首页链接。
+
+可选的隔离 X11 窗口回归（不会操作现有桌面窗口）：
+
+```bash
+sudo apt-get install -y xvfb openbox wmctrl xdotool x11-utils
+env -u WAYLAND_DISPLAY GDK_BACKEND=x11 xvfb-run -a -s '-screen 0 1920x1080x24'   sh -c 'openbox >/tmp/screenrec-openbox.log 2>&1 & sleep 2; python3 tools/test-linux-window.py target/ScreenRecorder-1.0.14-x86_64.AppImage --appimage-extract-and-run'
+```

@@ -6,18 +6,6 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class RecordingPreferencesTest {
-    @Test void detectsAllEightEdgesWithoutInterceptingContent() {
-        assertEquals("N", MainWindow.edgeAt(500, 3, 1000, 700));
-        assertEquals("S", MainWindow.edgeAt(500, 697, 1000, 700));
-        assertEquals("W", MainWindow.edgeAt(3, 350, 1000, 700));
-        assertEquals("E", MainWindow.edgeAt(997, 350, 1000, 700));
-        assertEquals("NW", MainWindow.edgeAt(3, 12, 1000, 700));
-        assertEquals("NE", MainWindow.edgeAt(988, 3, 1000, 700));
-        assertEquals("SW", MainWindow.edgeAt(3, 688, 1000, 700));
-        assertEquals("SE", MainWindow.edgeAt(997, 697, 1000, 700));
-        assertNull(MainWindow.edgeAt(500, 350, 1000, 700));
-        assertNull(MainWindow.edgeAt(-1, 350, 1000, 700));
-    }
     @Test void settingsRoundTripAndOldFilesKeepDefaults() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
         AppSettings old = mapper.readValue("{}", AppSettings.class);
