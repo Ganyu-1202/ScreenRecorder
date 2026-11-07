@@ -563,7 +563,7 @@ public final class SettingsView extends ScrollPane {
 
     private Node buildAboutSection() {
         VBox card = sectionCard(I18n.t("common.about"), null);
-        Label version = UiFactory.secondary("ScreenRecorder 1.0.14  ·  "
+        Label version = UiFactory.secondary("ScreenRecorder 1.0.15  ·  "
                 + System.getProperty("os.name") + "  ·  Java "
                 + System.getProperty("java.version"));
         Label paths = UiFactory.caption(

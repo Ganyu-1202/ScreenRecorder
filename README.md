@@ -178,10 +178,10 @@ java -jar target/ScreenRecorder.jar
 
 ```powershell
 mvn -Pfatjar clean package
-.\tools\build-installer.ps1 -Version 1.0.14
+.\tools\build-installer.ps1 -Version 1.0.15
 
 # 或明确指定其他构建目录的 JAR
-.\tools\build-installer.ps1 -Version 1.0.14 -JarPath D:\path\to\ScreenRecorder.jar
+.\tools\build-installer.ps1 -Version 1.0.15 -JarPath D:\path\to\ScreenRecorder.jar
 ```
 
 当前脚本使用 `jlink` 裁剪运行时并通过 `jpackage` 同时生成 EXE、MSI 安装包及应用镜像，携带 Java、JavaFX、FFmpeg 和两个原生辅助程序，正常运行无须用户另装 Java／FFmpeg。
@@ -198,7 +198,7 @@ mvn -Pfatjar clean package
 
 ### Linux / macOS
 
-Linux 已提供自包含 AppImage 构建流程，产物为 `target/ScreenRecorder-1.0.14-x86_64.AppImage`，详见 [Linux / AppImage](#linux--appimagewindows-与-linux-共用源码)。正常使用无需另外安装 Java 或 FFmpeg，但仍依赖兼容的系统基础服务。
+Linux 已提供自包含 AppImage 构建流程，产物为 `target/ScreenRecorder-1.0.15-x86_64.AppImage`，详见 [Linux / AppImage](#linux--appimagewindows-与-linux-共用源码)。正常使用无需另外安装 Java 或 FFmpeg，但仍依赖兼容的系统基础服务。
 
 Linux `.deb`/`.rpm`、macOS `.dmg`/`.app` 尚未提供完整发行流程。macOS 仍需准备匹配架构的 JDK、JavaFX、FFmpeg 并验证权限和音频回环。生成包文件不代表所有平台功能和兼容性已验收。
 
@@ -305,15 +305,15 @@ FFmpeg、x264/x265、Java/JavaFX 及其他第三方组件保留各自许可。�
 
 ### 直接运行
 
-构建产物为 `target/ScreenRecorder-1.0.14-x86_64.AppImage`：
+构建产物为 `target/ScreenRecorder-1.0.15-x86_64.AppImage`：
 
 ```bash
-chmod +x ScreenRecorder-1.0.14-x86_64.AppImage
-./ScreenRecorder-1.0.14-x86_64.AppImage
+chmod +x ScreenRecorder-1.0.15-x86_64.AppImage
+./ScreenRecorder-1.0.15-x86_64.AppImage
 # 不支持 FUSE 的环境：
-./ScreenRecorder-1.0.14-x86_64.AppImage --appimage-extract-and-run
+./ScreenRecorder-1.0.15-x86_64.AppImage --appimage-extract-and-run
 # 查看内置引擎版本，无需系统 FFmpeg / Java：
-./ScreenRecorder-1.0.14-x86_64.AppImage --appimage-extract-and-run --engine-version
+./ScreenRecorder-1.0.15-x86_64.AppImage --appimage-extract-and-run --engine-version
 ```
 
 AppImage 内置 Java 21 runtime、JavaFX 原生库、项目专用 FFmpeg / ffprobe、
@@ -375,7 +375,7 @@ mvn -Dscreenrec.linux.integration=true test
 CI 配方见 `.github/workflows/linux-appimage.yml`，Wayland 授权流程仍需 GNOME/KDE/其他目标桌面人工验收。
 
 
-### 1.0.14 窗口行为修复
+### 1.0.15 窗口行为修复
 
 主窗口统一使用系统原生标题栏和边框，由 Windows、Linux 窗口管理器、macOS 管理最大化、最小化、还原、拖动和缩放；不再以手动修改窗口尺寸模拟最大化。标题使用 `app.name`，图标使用项目 `screen-recorder-*.png` 资源；Windows 启动器/安装包使用同系列 ICO，AppImage 使用同系列 PNG。录制状态提示保留在应用内容区。
 
@@ -395,16 +395,16 @@ candle -?
 
 mvn "-Pwin,fatjar" clean package
 if ($LASTEXITCODE -ne 0) { throw "Maven build failed" }
-.\tools\build-installer.ps1 -Version 1.0.14
+.\tools\build-installer.ps1 -Version 1.0.15
 ```
 
 脚本一次生成：
 
-- `target/installer-<时间戳>/output/ScreenRecorder-1.0.14.exe`：EXE 安装包。
-- `target/installer-<时间戳>/output/ScreenRecorder-1.0.14.msi`：MSI 安装包。
+- `target/installer-<时间戳>/output/ScreenRecorder-1.0.15.exe`：EXE 安装包。
+- `target/installer-<时间戳>/output/ScreenRecorder-1.0.15.msi`：MSI 安装包。
 - `target/installer-<时间戳>/image/ScreenRecorder/ScreenRecorder.exe`：免安装应用目录的启动器；分发时必须带上整个 `ScreenRecorder/` 目录，而不是只复制 EXE。
 
-安装包未签名，SmartScreen 提示不表示构建失败。构建不会自动安装或上传发布。若 PowerShell 阻止项目脚本执行，可单次使用 `powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\build-installer.ps1 -Version 1.0.14`。
+安装包未签名，SmartScreen 提示不表示构建失败。构建不会自动安装或上传发布。若 PowerShell 阻止项目脚本执行，可单次使用 `powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\build-installer.ps1 -Version 1.0.15`。
 
 ### 自行构建 Linux AppImage（x86_64）
 
@@ -432,19 +432,19 @@ chmod +x ffmpeg/linux/{ffmpeg,ffprobe,portal-capture,x11-windows,tray-indicator}
 mvn -Plinux test
 
 # 脚本自行构建 Linux fat JAR、jlink 运行时，并捆绑动态库
-VERSION=1.0.14 bash tools/build-appimage.sh
+VERSION=1.0.15 bash tools/build-appimage.sh
 
 # 检查产物和捆绑引擎，不依赖宿主机安装 Java/FFmpeg
-(cd target && sha256sum -c ScreenRecorder-1.0.14-x86_64.AppImage.sha256)
-target/ScreenRecorder-1.0.14-x86_64.AppImage --appimage-extract-and-run --engine-version
-target/ScreenRecorder-1.0.14-x86_64.AppImage --appimage-extract-and-run --capture-self-test
+(cd target && sha256sum -c ScreenRecorder-1.0.15-x86_64.AppImage.sha256)
+target/ScreenRecorder-1.0.15-x86_64.AppImage --appimage-extract-and-run --engine-version
+target/ScreenRecorder-1.0.15-x86_64.AppImage --appimage-extract-and-run --capture-self-test
 ```
 
-产物：`target/ScreenRecorder-1.0.14-x86_64.AppImage` 及 `.sha256`。有 FUSE 时可直接运行；没有 FUSE（例如部分 WSL 环境）使用 `--appimage-extract-and-run`。基于 Ubuntu 24.04 构建的产物不保证支持更老的 glibc 系统；须在计划支持的最老发行版构建并实测。公共分发 GPL 引擎时，须提供精确对应的源码及第三方许可证，不能只附上游首页链接。
+产物：`target/ScreenRecorder-1.0.15-x86_64.AppImage` 及 `.sha256`。有 FUSE 时可直接运行；没有 FUSE（例如部分 WSL 环境）使用 `--appimage-extract-and-run`。基于 Ubuntu 24.04 构建的产物不保证支持更老的 glibc 系统；须在计划支持的最老发行版构建并实测。公共分发 GPL 引擎时，须提供精确对应的源码及第三方许可证，不能只附上游首页链接。
 
 可选的隔离 X11 窗口回归（不会操作现有桌面窗口）：
 
 ```bash
 sudo apt-get install -y xvfb openbox wmctrl xdotool x11-utils
-env -u WAYLAND_DISPLAY GDK_BACKEND=x11 xvfb-run -a -s '-screen 0 1920x1080x24'   sh -c 'openbox >/tmp/screenrec-openbox.log 2>&1 & sleep 2; python3 tools/test-linux-window.py target/ScreenRecorder-1.0.14-x86_64.AppImage --appimage-extract-and-run'
+env -u WAYLAND_DISPLAY GDK_BACKEND=x11 xvfb-run -a -s '-screen 0 1920x1080x24'   sh -c 'openbox >/tmp/screenrec-openbox.log 2>&1 & sleep 2; python3 tools/test-linux-window.py target/ScreenRecorder-1.0.15-x86_64.AppImage --appimage-extract-and-run'
 ```

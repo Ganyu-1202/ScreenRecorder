@@ -37,6 +37,7 @@ public final class TrayManager {
     private final Consumer<String> onNotify;
 
     private TrayIcon trayIcon;
+    private WindowsTrayMenu windowsMenu;
     private volatile org.firefly.screenrec.util.ProcessRunner.Handle linuxTray;
     private java.nio.file.Path linuxIconDirectory;
     private volatile boolean disposing;
@@ -103,10 +104,32 @@ public final class TrayManager {
             quitItem.addActionListener(e -> runOnFx(this::quit));
             menu.add(quitItem);
 
-            trayIcon = new TrayIcon(createTrayImage(), "ScreenRecorder", menu);
+            if (PlatformUtils.isWindows()) {
+                windowsMenu = new WindowsTrayMenu(this::showStage,
+                        () -> controller.startRecording(org.firefly.screenrec.core.recorder.CaptureSource.Kind.MONITOR,
+                                null, null, null),
+                        () -> controller.stopRecording(),
+                        () -> FxScheduler.background(() -> PlatformUtils.openFolder(context.outputDirectory())),
+                        this::quit);
+            }
+            trayIcon = new TrayIcon(createTrayImage(), "ScreenRecorder",
+                    windowsMenu == null ? menu : null);
             trayIcon.setImageAutoSize(true);
             trayIcon.setToolTip("ScreenRecorder");
             trayIcon.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseReleased(MouseEvent e) {
+                    if (windowsMenu != null && e.getButton() == MouseEvent.BUTTON3) {
+                        runOnFx(() -> {
+                            if (disposing || windowsMenu == null) return;
+                            // JavaFX Robot returns logical coordinates for each monitor;
+                            // AWT tray event screen coordinates differ on mixed-DPI desktops.
+                            var point = new javafx.scene.robot.Robot().getMousePosition();
+                            windowsMenu.show(point, context.settings().getTheme(), recording);
+                        });
+                    }
+                }
+
                 @Override
                 public void mouseClicked(MouseEvent e) {
                     if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 1) {
@@ -181,6 +204,9 @@ public final class TrayManager {
         String folder = I18n.t("tray.folder");
         String quit = I18n.t("tray.quit");
         boolean active = recording;
+        if (windowsMenu != null) runOnFx(() -> {
+            if (windowsMenu != null) windowsMenu.refresh(active);
+        });
         String tooltip = active ? I18n.t("tray.recording") : "ScreenRecorder";
         EventQueue.invokeLater(() -> {
             if (trayIcon == null) return;
@@ -206,6 +232,7 @@ public final class TrayManager {
             } catch (java.io.IOException e) { Log.debug("Tray icon cleanup: " + e.getMessage()); }
         }
         I18n.languageProperty().removeListener(languageListener);
+        if (windowsMenu != null) { windowsMenu.dispose(); windowsMenu = null; }
         if (trayIcon != null) {
             try {
                 SystemTray.getSystemTray().remove(trayIcon);

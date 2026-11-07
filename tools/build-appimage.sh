@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 export PATH="/usr/sbin:/sbin:$PATH"
-VERSION=${VERSION:-1.0.14}
+VERSION=${VERSION:-1.0.15}
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
 cd "$ROOT"
 [[ $(uname -m) == x86_64 ]] || { echo 'This recipe currently targets x86_64 Linux' >&2; exit 1; }

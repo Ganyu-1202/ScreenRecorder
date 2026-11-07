@@ -1,4 +1,4 @@
-param([string]$Version = "1.0.14", [string]$JarPath = "")
+param([string]$Version = "1.0.15", [string]$JarPath = "")
 $ErrorActionPreference = "Stop"
 $Root = Split-Path $PSScriptRoot -Parent
 $Cache = Join-Path $PSScriptRoot "packaging-cache"
